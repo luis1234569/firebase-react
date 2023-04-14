@@ -17,6 +17,7 @@ function Home() {
   return (
     <div>
       home hola {user?.displayName || user?.email} <button onClick={handleLogout}>LOGOUT</button>
+
     </div>
   );
 }
