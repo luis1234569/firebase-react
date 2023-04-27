@@ -3,11 +3,10 @@ import FormLink from "./FormLink";
 import { getWebsites, deleteWebsite } from "../../firebase/api";
 import { useState } from "react";
 import { toast } from "react-toastify";
- 
 
 function ListLinks() {
   const [websites, setWebsites] = useState([]);
-  const [currentId, setCurrentId ] = useState("");
+  const [currentId, setCurrentId] = useState("");
 
   const getLinks = async () => {
     const querySnapshot = await getWebsites();
@@ -24,7 +23,9 @@ function ListLinks() {
 
   const onDeleteLink = async (id) => {
     await deleteWebsite(id);
-    console.log("delete");
+    toast("Link deleted", {
+      type: "info",
+    });
     getLinks();
   };
 
@@ -33,45 +34,67 @@ function ListLinks() {
   }, []);
 
   return (
-    <div className="p-3">
-      <div className="card">
-        <FormLink  {...{newLink, currentId}}></FormLink>
-      </div>
-      <div className="card block mt-4">
-        {websites.map((link) => (
-          <div
-            className="col-md-4 p-3 mt-2 bg-cyan-600 hover:bg-cyan-500"
-            key={link.id}
-          >
-            <div className="card mb-3 card-website">
-              <div className="card-body">
-                <div className="d-flex justify-content-between">
-                  <h4>{link.name}</h4>
-                  <button
-                    className="btn btn-danger btn-sm d-flex align-items-center"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDeleteLink(link.id);
-                    }}
-                  >
-                    <i className="material-icons">close</i>
-                  </button>
-                  <button
-                    className="btn btn-danger btn-sm d-flex align-items-center"
-                    onClick={() => setCurrentId(link.id)}
-                  >
-                    <i className="material-icons">edit</i>
-                  </button>
+    <>
+      <div className=" 2xl:w-4/5 mx-auto md:flex gap-8 md:w-full p-3 ">
+        <div className="w-5/6 md:w-1/2 mx-auto">
+          <FormLink {...{ newLink, currentId }}></FormLink>
+        </div>
+
+        <div className="w-5/6 md:w-1/2  mx-auto">
+          <div className="dash overflow-y-auto scroll">
+            {websites.map((link) => (
+              <div
+                className="  mb-4 h-24 bg-cyan-800 border-cyan-950 shadow-md text-white rounded-md"
+                key={link.id}
+              >
+                <h3 className="text-center bg-cyan-400 text-black">
+                  {link.name}
+                </h3>
+                <div className="px-2 py-1">
+                  <div className="flex flex-row justify-between">
+                    <div className="img">
+                      <img
+                        className="h-14 object-cover"
+                        src={link.linkImage}
+                        alt=""
+                        onError={(e) => {
+                          e.target.src =
+                            "https://www.generationsforpeace.org/wp-content/uploads/2018/03/empty.jpg";
+                          e.target.onError = "https://www.generationsforpeace.org/wp-content/uploads/2018/03/empty.jpg";
+                        }}
+                      />
+                    </div>
+                    <div className="flex-col">
+                      <div className="flex flex-row justify-center">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDeleteLink(link.id);
+                          }}
+                        >
+                          <i className="material-icons">close</i>
+                        </button>
+                        <button onClick={() => setCurrentId(link.id)}>
+                          <i className="material-icons">edit</i>
+                        </button>
+                      </div>
+                      <a
+                        className="hover:text-blue-400"
+                        href={link.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Go to Website
+                      </a>
+                    </div>
+                  </div>
                 </div>
-                <a href={link.link} target="_blank" rel="noopener noreferrer">
-                  Go to Website
-                </a>
               </div>
-            </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
